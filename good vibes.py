@@ -10,7 +10,7 @@ def generate_white_noise(duration, sample_rate=44100):
     noise = np.random.uniform(-1, 1, int(sample_rate * duration))
     return noise
 
-# Function to generate a sine wave (for calming frequencies)
+# Function to generate a sine wave
 def generate_sine_wave(frequency, duration, sample_rate=44100):
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
     sine_wave = 0.5 * np.sin(2 * np.pi * frequency * t)
@@ -44,18 +44,21 @@ else:
 
 # Generate and play sound
 if st.button("Generate Sound"):
-    st.write(f"Generating {sound_type} for {duration} seconds...")
+    try:
+        st.write(f"Generating {sound_type} for {duration} seconds...")
 
-    if sound_type == "White Noise":
-        audio = generate_white_noise(duration)
-    elif sound_type == "Calming Frequency":
-        audio = generate_sine_wave(frequency, duration)
-    elif sound_type == "Nature Sounds (Placeholder)":
-        st.warning("Nature sounds are not implemented yet. Please choose another option.")
-        st.stop()
+        if sound_type == "White Noise":
+            audio = generate_white_noise(duration)
+        elif sound_type == "Calming Frequency":
+            audio = generate_sine_wave(frequency, duration)
+        elif sound_type == "Nature Sounds (Placeholder)":
+            st.warning("Nature sounds are not implemented yet. Please choose another option.")
+            st.stop()
 
-    # Save audio to BytesIO and play
-    audio_bytes = save_audio_to_bytes(audio)
-    st.audio(audio_bytes, format="audio/wav")
+        # Save audio to BytesIO and play
+        audio_bytes = save_audio_to_bytes(audio)
+        st.audio(audio_bytes, format="audio/wav")
 
-    st.success("Sound generated! Press the play button above to listen.")
+        st.success("Sound generated! Press the play button above to listen.")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
