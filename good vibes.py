@@ -1,8 +1,6 @@
 import streamlit as st
 import numpy as np
 from scipy.io.wavfile import write
-from pydub import AudioSegment
-from pydub.playback import play
 import io
 
 # Function to generate white noise
@@ -26,13 +24,13 @@ def save_audio_to_bytes(audio, sample_rate=44100):
 
 # Streamlit App
 st.title("Good Vibes Sound Generator 🌿")
-st.write("Generate soothing sounds like nature, white noise, and calming frequencies.")
+st.write("Generate soothing sounds like white noise and calming frequencies.")
 
 # Sidebar for user input
 st.sidebar.header("Settings")
 sound_type = st.sidebar.selectbox(
     "Choose a sound type:",
-    ["White Noise", "Calming Frequency", "Nature Sounds (Placeholder)"]
+    ["White Noise", "Calming Frequency"]
 )
 
 duration = st.sidebar.slider("Duration (seconds):", 1, 60, 10)
@@ -44,21 +42,15 @@ else:
 
 # Generate and play sound
 if st.button("Generate Sound"):
-    try:
-        st.write(f"Generating {sound_type} for {duration} seconds...")
+    st.write(f"Generating {sound_type} for {duration} seconds...")
 
-        if sound_type == "White Noise":
-            audio = generate_white_noise(duration)
-        elif sound_type == "Calming Frequency":
-            audio = generate_sine_wave(frequency, duration)
-        elif sound_type == "Nature Sounds (Placeholder)":
-            st.warning("Nature sounds are not implemented yet. Please choose another option.")
-            st.stop()
+    if sound_type == "White Noise":
+        audio = generate_white_noise(duration)
+    elif sound_type == "Calming Frequency":
+        audio = generate_sine_wave(frequency, duration)
 
-        # Save audio to BytesIO and play
-        audio_bytes = save_audio_to_bytes(audio)
-        st.audio(audio_bytes, format="audio/wav")
+    # Save audio to BytesIO and stream it
+    audio_bytes = save_audio_to_bytes(audio)
+    st.audio(audio_bytes, format="audio/wav")
 
-        st.success("Sound generated! Press the play button above to listen.")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+    st.success("Sound generated! Press the play button above to listen.")
