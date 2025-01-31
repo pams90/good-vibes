@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 from scipy.io.wavfile import write
 import io
+from pydub import AudioSegment
 
 # Function to generate white noise
 def generate_white_noise(duration, sample_rate=44100):
@@ -74,13 +75,55 @@ def simulate_forest(duration, sample_rate=44100):
     forest = white_noise / np.max(np.abs(white_noise))  # Normalize
     return forest
 
-# Function to save audio to a BytesIO object
+# Function to simulate piano sounds (simple sine wave approximation)
+def simulate_piano(duration, sample_rate=44100):
+    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+    frequencies = [261.63, 329.63, 392.00]  # C4, E4, G4 (C major chord)
+    piano_wave = np.zeros_like(t)
+    for freq in frequencies:
+        piano_wave += 0.2 * np.sin(2 * np.pi * freq * t)
+    return piano_wave / np.max(np.abs(piano_wave))  # Normalize
+
+# Function to simulate guitar sounds (simple sine wave approximation)
+def simulate_guitar(duration, sample_rate=44100):
+    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+    frequencies = [82.41, 110.00, 146.83]  # E2, A2, D3 (open strings)
+    guitar_wave = np.zeros_like(t)
+    for freq in frequencies:
+        guitar_wave += 0.2 * np.sin(2 * np.pi * freq * t)
+    return guitar_wave / np.max(np.abs(guitar_wave))  # Normalize
+
+# Function to simulate flute sounds (simple sine wave approximation)
+def simulate_flute(duration, sample_rate=44100):
+    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+    frequency = 440.00  # A4 note
+    flute_wave = 0.5 * np.sin(2 * np.pi * frequency * t)
+    return flute_wave / np.max(np.abs(flute_wave))  # Normalize
+
+# Function to simulate singing bowls (simple sine wave approximation)
+def simulate_singing_bowls(duration, sample_rate=44100):
+    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+    frequency = 392.00  # G4 note
+    singing_bowl_wave = 0.5 * np.sin(2 * np.pi * frequency * t)
+    envelope = np.exp(-0.5 * t)  # Slow fade
+    singing_bowl_wave = singing_bowl_wave * envelope
+    return singing_bowl_wave / np.max(np.abs(singing_bowl_wave))  # Normalize
+
+# Function to save audio to a BytesIO object (WAV format)
 def save_audio_to_bytes(audio, sample_rate=44100):
     audio = np.int16(audio * 32767)
     byte_io = io.BytesIO()
     write(byte_io, sample_rate, audio)
     byte_io.seek(0)
     return byte_io
+
+# Function to convert WAV to MP3
+def convert_to_mp3(wav_bytes):
+    audio = AudioSegment.from_wav(io.BytesIO(wav_bytes))
+    mp3_bytes = io.BytesIO()
+    audio.export(mp3_bytes, format="mp3")
+    mp3_bytes.seek(0)
+    return mp3_bytes
 
 # Streamlit App
 st.title("Good Vibes Sound Generator 🌿")
@@ -136,6 +179,14 @@ if st.button("Generate Sound"):
         audio = simulate_ocean_waves(duration)
     elif sound_type == "Forest":
         audio = simulate_forest(duration)
+    elif sound_type == "Piano":
+        audio = simulate_piano(duration)
+    elif sound_type == "Guitar":
+        audio = simulate_guitar(duration)
+    elif sound_type == "Flute":
+        audio = simulate_flute(duration)
+    elif sound_type == "Singing Bowls":
+        audio = simulate_singing_bowls(duration)
     else:
         st.error("Sound type not implemented yet.")
         st.stop()
@@ -143,5 +194,24 @@ if st.button("Generate Sound"):
     # Save audio to BytesIO and stream it
     audio_bytes = save_audio_to_bytes(audio)
     st.audio(audio_bytes, format="audio/wav")
+
+    # Download buttons
+    st.write("### Download Audio")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.download_button(
+            label="Download as WAV",
+            data=audio_bytes,
+            file_name=f"{sound_type}_{duration}s.wav",
+            mime="audio/wav",
+        )
+    with col2:
+        mp3_bytes = convert_to_mp3(audio_bytes.getvalue())
+        st.download_button(
+            label="Download as MP3",
+            data=mp3_bytes,
+            file_name=f"{sound_type}_{duration}s.mp3",
+            mime="audio/mp3",
+        )
 
     st.success("Sound generated! Press the play button above to listen.")
