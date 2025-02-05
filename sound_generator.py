@@ -109,6 +109,59 @@ def simulate_singing_bowls(duration, sample_rate=44100):
     singing_bowl_wave = singing_bowl_wave * envelope
     return singing_bowl_wave / np.max(np.abs(singing_bowl_wave))  # Normalize
 
+# Function to simulate lo-fi chill beats
+def simulate_lofi_beats(duration, sample_rate=44100):
+    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+    lo_fi = 0.5 * np.sin(2 * np.pi * 110 * t) + 0.5 * np.random.uniform(-0.5, 0.5, len(t))
+    return lo_fi / np.max(np.abs(lo_fi))
+
+# Function to simulate coffee shop ambience
+def simulate_coffee_shop(duration, sample_rate=44100):
+    conversations = generate_white_noise(duration, sample_rate) * 0.3
+    jazz = generate_sine_wave(220, duration, sample_rate) * 0.2
+    return (conversations + jazz) / np.max(np.abs(conversations + jazz))
+
+# Function to simulate minimalist piano and guitar loops
+def simulate_piano_guitar_loops(duration, sample_rate=44100):
+    piano = simulate_piano(duration, sample_rate) * 0.5
+    guitar = simulate_guitar(duration, sample_rate) * 0.5
+    return (piano + guitar) / np.max(np.abs(piano + guitar))
+
+# Function to simulate calming Japanese koto and shamisen
+def simulate_koto_shamisen(duration, sample_rate=44100):
+    koto = generate_sine_wave(440, duration, sample_rate) * 0.5
+    shamisen = generate_sine_wave(330, duration, sample_rate) * 0.5
+    return (koto + shamisen) / np.max(np.abs(koto + shamisen))
+
+# Function to simulate harp and celestial sounds
+def simulate_harp_celestial(duration, sample_rate=44100):
+    harp = generate_sine_wave(493.88, duration, sample_rate) * 0.5
+    celestial = generate_sine_wave(523.25, duration, sample_rate) * 0.5
+    return (harp + celestial) / np.max(np.abs(harp + celestial))
+
+# Function to simulate ambient synth pads with subtle rain
+def simulate_ambient_synth_rain(duration, sample_rate=44100):
+    synth = generate_sine_wave(440, duration, sample_rate) * 0.5
+    rain = simulate_rain(duration, sample_rate) * 0.5
+    return (synth + rain) / np.max(np.abs(synth + rain))
+
+# Function to simulate 3D spatial sounds
+def simulate_3d_spatial(duration, sample_rate=44100):
+    spatial = generate_sine_wave(440, duration, sample_rate) * 0.5
+    return spatial / np.max(np.abs(spatial))
+
+# Function to simulate space and sci-fi ambience
+def simulate_space_sci_fi(duration, sample_rate=44100):
+    space = generate_sine_wave(50, duration, sample_rate) * 0.5
+    sci_fi = generate_sine_wave(60, duration, sample_rate) * 0.5
+    return (space + sci_fi) / np.max(np.abs(space + sci_fi))
+
+# Function to simulate medieval library sounds
+def simulate_medieval_library(duration, sample_rate=44100):
+    quill = generate_sine_wave(440, duration, sample_rate) * 0.5
+    pages = generate_sine_wave(330, duration, sample_rate) * 0.5
+    return (quill + pages) / np.max(np.abs(quill + pages))
+
 # Function to save audio to a BytesIO object (WAV format)
 def save_audio_to_bytes(audio, sample_rate=44100):
     audio = np.int16(audio * 32767)
@@ -133,7 +186,7 @@ st.write("Generate soothing sounds like nature, white noise, and calming frequen
 st.sidebar.header("Settings")
 sound_category = st.sidebar.selectbox(
     "Choose a sound category:",
-    ["Nature Sounds", "Noise Colors", "Calming Frequencies", "Ambient Music"],
+    ["Nature Sounds", "Noise Colors", "Calming Frequencies", "Ambient Music", "Study & Productivity Sounds"],
 )
 
 if sound_category == "Nature Sounds":
@@ -155,6 +208,13 @@ elif sound_category == "Ambient Music":
     sound_type = st.sidebar.selectbox(
         "Choose a sound type:",
         ["Piano", "Guitar", "Flute", "Singing Bowls"],
+    )
+elif sound_category == "Study & Productivity Sounds":
+    sound_type = st.sidebar.selectbox(
+        "Choose a sound type:",
+        ["Lo-Fi Chill Beats with Soft Vinyl Crackle", "Coffee Shop Ambience", "Minimalist Piano & Soft Guitar Loops",
+         "Calming Japanese Koto & Shamisen", "Harp & Celestial Sounds for Focus", "Ambient Synth Pads with Subtle Rain",
+         "3D Spatial Sounds for Deep Focus", "Space & Sci-Fi Ambience", "Medieval Library Sounds"],
     )
 
 duration = st.sidebar.slider("Duration (seconds):", 1, 36000, 600)  # Up to 10 hours
@@ -187,6 +247,24 @@ if st.button("Generate Sound"):
         audio = simulate_flute(duration)
     elif sound_type == "Singing Bowls":
         audio = simulate_singing_bowls(duration)
+    elif sound_type == "Lo-Fi Chill Beats with Soft Vinyl Crackle":
+        audio = simulate_lofi_beats(duration)
+    elif sound_type == "Coffee Shop Ambience":
+        audio = simulate_coffee_shop(duration)
+    elif sound_type == "Minimalist Piano & Soft Guitar Loops":
+        audio = simulate_piano_guitar_loops(duration)
+    elif sound_type == "Calming Japanese Koto & Shamisen":
+        audio = simulate_koto_shamisen(duration)
+    elif sound_type == "Harp & Celestial Sounds for Focus":
+        audio = simulate_harp_celestial(duration)
+    elif sound_type == "Ambient Synth Pads with Subtle Rain":
+        audio = simulate_ambient_synth_rain(duration)
+    elif sound_type == "3D Spatial Sounds for Deep Focus":
+        audio = simulate_3d_spatial(duration)
+    elif sound_type == "Space & Sci-Fi Ambience":
+        audio = simulate_space_sci_fi(duration)
+    elif sound_type == "Medieval Library Sounds":
+        audio = simulate_medieval_library(duration)
     else:
         st.error("Sound type not implemented yet.")
         st.stop()
